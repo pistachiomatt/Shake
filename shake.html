@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title></title>
+    <!-- Lovingly crafted. -->
+    <meta content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+    <!-- js -->
+    <script src="js/jq.js"></script>
+    <script src="js/easing.js"></script>
+    <script src="js/jquery.matthew.shake.js"></script>
+    
+    <script>
+    
+      $(document).ready(function(){
+           
+       $(".box").click(function () {
+         
+         $(this).shake();
+         
+      });
+       
+    });
+    
+    </script>
+    
+    
+    <style>
+    
+    body {
+      font-family: helvetica;
+      padding: 100px;
+    }
+    
+    .box {
+      background-color: pink;
+      width: 100px;
+      height: 25px;
+      padding: 20px;
+    }
+    
+    </style>
+  </head>
+  <body>
+  
+    <div class="box">I am not a crook</div>
+  
+  </body>
+</html>
