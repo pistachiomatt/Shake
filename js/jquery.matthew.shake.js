@@ -26,61 +26,55 @@ jQuery.fn.shake = function(options) {
     var defaults = {
       distance: 5,
       iterations: 4,
-      duration: 50
+      duration: 50,
+      complete: function(){}
     };
 
     var opt = $.extend(defaults, options);
     
-    var distance = opt.distance;
-    var iterations = opt.iterations;
-    var duration = opt.duration;
-    // If left is used for existing element styling, retain it.
-    distanceOriginal = parseInt($el.css('left'));
-    // Or if not, zero.
-    if (isNaN(distanceOriginal)) distanceOriginal = 0;
-    // Stay absolute, otherwise relative that guy up.
-    if ($el.css('position') != 'absolute' || 
-        $el.css('position') != 'relative' ) {
-       $el.css({position: 'relative'});
-    }
-    
-    var i = 0;    
+    var existing_style = {
+      left: parseInt($el.css('left'), 10) || 0,
+      position: $el.css("position")
+    };
 
-    while(i < iterations) {
-      // big first shake
-      if (i == 0) {
-        $el.animate({left:'-='+distance*1.2+'px'}, {duration:duration, easing:'easeInOutCubic'});
-        $el.animate({left:'+='+2*distance*1.2+'px'}, {duration:duration, easing:'easeInOutCubic'});
-        // undo extra 1.2
-        $el.animate({left:'-='+distance*2.2+'px'}, {duration:duration, easing:'easeInOutCubic'});
-        $el.animate({left:'+='+2*distance+'px'}, {duration:duration, easing:'easeInOutCubic'});
-        // count that iteration
-        i++;
-      } else {
-        $el.animate({left:'-='+2*distance+'px'}, {duration:duration, easing:'easeInOutCubic'});
-        $el.animate({left:'+='+2*distance+'px'}, {duration:duration, easing:'easeInOutCubic'});
-      }
-      // get tired after each shake
-      distance = distance - (distance*.3);
-      i++;
-      // stop shaking you twit
-      if (i == iterations) {
-        $el.animate({left: distanceOriginal}, {
-          duration: duration, 
-          easing:'easeInOutCubic',
-          complete: function() {
-            // cleanup after yourself
-            $el.attr('style', '');
-            
-            // Execute the on-complete function
-            if(typeof opt.complete == 'function'){
-              opt.complete.call(this);
-            }
-            
-          } // complete
-        }); // animate
-      }// stop shaking you twit
-      
-    }// while
+    // Stay absolute, otherwise relative that guy up.
+    if (existing_style.position != "absolute") $el.css({position: 'relative'});
+
+    var animation_options = {
+      duration: opt.duration,
+      easing: 'easeInOutCubic'
+    };
     
-}
+    // Start at 1 because we shake twice the first time
+    for(var i = 1; i < opt.iterations; i++){
+      if (i === 1) {
+        // big first shake
+        $el
+          .animate({left:'-='+opt.distance*1.2+'px'}, animation_options)
+          .animate({left:'+='+2*opt.distance*1.2+'px'}, animation_options)
+          .animate({left:'-='+opt.distance*2.2+'px'}, animation_options) // undo extra 1.2
+          .animate({left:'+='+2*opt.distance+'px'}, animation_options);
+
+      } else {
+        $el
+          .animate({left:'-='+2*opt.distance+'px'}, animation_options)
+          .animate({left:'+='+2*opt.distance+'px'}, animation_options);
+      }
+
+      opt.distance *= 0.7; // get tired after each shake
+    }
+
+    // stop shaking you twat
+    $el.animate({
+      left: existing_style.left
+    }, $.extend(animation_options, {
+      complete: function() {
+        // cleanup after yourself
+        $el.css(existing_style);
+        
+        // Execute the on-complete function with el as this
+        opt.complete.call($el[0]);
+        
+      }
+    }));
+};
